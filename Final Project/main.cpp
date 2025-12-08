@@ -13,22 +13,11 @@ using namespace std;
 void ClearScreen();
 void displayMenu();
 void areaOfShapes();
+void calculateFishTankCost();
+
 
 int main() {
-	// Display the menu
-	displayMenu();
-	areaOfShapes();
-
-
-
-
-	// Clear Screen
-	char charVar = 0;;
-	cout << "Type a key and press the enter key to clear the screen." << endl;
-	cin.get();
-	ClearScreen();
-	cout << "The Screen has been cleared and all console data prior has been wiped out.\n";
-	return 0;
+displayMenu();
 
 }
 
@@ -123,46 +112,141 @@ void areaOfShapes() {
 		cin >> exitChoice;
 		if (exitChoice == 'Y' || exitChoice == 'y') {
 			cout << "Exiting the Area of Shapes Menu." << endl;
-		} else 
+		}
+		else
 		{
 			areaOfShapes(); // Redisplays the menu if they choose to stay
 		}
 		break;
 
-	default: 
+	default:
 		if (choice != 4) {
-		cout << "Invalid choice. Please pick between 1-4." << endl;
+			cout << "Invalid choice. Please pick between 1-4." << endl;
 		}
 		else {
 			cout << "Exiting the Area of Shapes Menu." << endl;
 		}
-		
+
 		break;
 	}
 }
 
-double getDimensions(double length, double depth, double height) {
-	cout << "What is the length of the tank in inches? " << endl;
-	cin >> length;
-	cout << "What is the depth of the tank in inches? " << endl;
-	cin >> depth;
-	cout << "What is the height of the tank in inches? " << endl;
-	cin >> height;
-	if (length <= 0 || depth <= 0 || height <= 0) {
-		cout << "Invalid input. Dimensions must be greater than 0." << endl;
-	}
+// Fish Tank Calculations
+double calculateVolume(double length, double width, double height) {
+	return length * width * height;
 }
 
+double calculateCost(double volume, double costPerGallon) {
+	const double cubicInches = 231.0;
+	double gallons = volume / cubicInches;
+	return gallons * costPerGallon;
+}
 
+void calculateFishTankCost() {
+	double length, width, height, costPerGallon;
 
+	cout << "Fish Tank Cost Calculator" << endl;
+	cout << "Enter the length of the tank (inches): ";
+	cin >> length;
+	cout << "Enter the width of the tank (inches): ";
+	cin >> width;
+	cout << "Enter the height of the tank (inches): ";
+	cin >> height;
+	cout << "Enter the cost per gallon: $";
+	cin >> costPerGallon;
 
+	double volume = calculateVolume(length, width, height);
+	double totalCost = calculateCost(volume, costPerGallon);
 
+	cout << "Tank Volume: " << volume << " cubic inches" << endl;
+	cout << fixed << setprecision(2) << "Total Cost: $" << totalCost << endl;
+	cout << "Press Enter to continue...";
+	cin.ignore();
+	cin.get();
+}
 
+// Search and Sort Arrays
 
+void bubbleSort(int arr[], int size) {
+	for (int i = 0; i < size - 1; i++) {
+		for (int j = 0; j < size - i - 1; j++) {
+			if (arr[j] > arr[j + 1]) {
+				int temp = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = temp;
+			}
+		}
+	}
+}
+int linearSearch(int arr[], int size, int target) {
+	for (int i = 0; i < size; i++) {
+		if (arr[i] == target) {
+			return i;
+		}
+	}
+	return -1;
+}
+int binarySearch(int arr[], int size, int target) {
+	int left = 0, right = size - 1;
+	while (left <= right) {
+		int mid = left + (right - left) / 2;
+		if (arr[mid] == target) return mid;
+		if (arr[mid] < target) left = mid + 1;
+		else right = mid - 1;
+	}
+	return -1;
+}
+void searchAndSortArrays() {
+	const int SIZE = 10;
+	int arr[SIZE];
+	int choice, target, result;
 
+	cout << "Enter " << SIZE << " integers: " << endl;
+	for (int i = 0; i < SIZE; i++) {
+		cout << "Element " << (i + 1) << ": ";
+		cin >> arr[i];
+	}
+	cout << "1. Sort Array" << endl;
+	cout << "2. Linear Search" << endl;
+	cout << "3. Binary Search (sorts first)" << endl;
+	cout << "Enter your choice: "<< endl;
+	cin >> choice;
+	switch (choice) {
+	case 1:
+		bubbleSort(arr, SIZE);
+		cout << "Sorted Array: ";
+		for (int i = 0; i < SIZE; i++) {
+			cout << arr[i] << " ";
+		}
+		break;
+	case 2:
+		cout << "Enter value to search: ";
+		cin >> target;
+		result = linearSearch(arr, SIZE, target);
+		if (result != -1)
+			cout << "Found at index: " << result;
+		else
+			cout << "Not found in array.";
+		break;
+	case 3:
+		bubbleSort(arr, SIZE);
+		cout << "Array sorted for binary search.";
+		cout << "Enter value to search: ";
+		cin >> target;
+		result = binarySearch(arr, SIZE, target);
+		if (result != -1)
+			cout << "Found at index: " << result;
+		else
+			cout << "Not found in array.";
+		break;
+	default:
+		cout << "Invalid choice!";
+	}
 
-
-
+	cout << "\nPress Enter to continue...";
+	cin.ignore();
+	cin.get();
+}
 
 
 
@@ -190,6 +274,7 @@ double getDimensions(double length, double depth, double height) {
 
 void displayMenu() {
 	int choice;
+	char exitConfirm;
 	do {
 		cout << "Menu Options: " << endl;
 		cout << "1. Calculate Area of Shapes" << endl;
@@ -207,15 +292,26 @@ void displayMenu() {
 
 		case 2:
 			cout << "You have selected Fish Tank Cost" << endl;
+			calculateFishTankCost();
 			break;
 		case 3:
-			cout << "You have selected Search and Sort Arrays" << endl;
+			ClearScreen();
+			searchAndSortArrays();
+			ClearScreen();
 			break;
 		case 4:
 			cout << "You have selected Password Validation" << endl;
 			break;
 		case 5:
-			cout << "You have selected to exit the program. Goodbye. " << endl;
+			cout << "Are you sure you want to exit? (y/n) " << endl;
+			cin >> exitConfirm;
+			if (exitConfirm == 'y' || exitConfirm == 'Y') {
+				cout << "Goodbye!" << endl;
+				return;
+			}
+			else {
+				ClearScreen();
+			}
 			break;
 		default:
 			cout << "Invalid choice. Please pick between 1-5." << endl;
